@@ -1,0 +1,94 @@
+{
+  "rules": {
+
+    ".read": "auth != null",
+
+    ".write": "auth != null && (
+      root.child('adminConfig/adminUid').val() === auth.uid ||
+      !root.child('adminConfig/adminUid').exists()
+    )",
+
+
+    "adminConfig": {
+      ".read": true,
+
+      "adminUid": {
+        ".write": "auth != null && (
+          !data.exists() ||
+          data.val() === auth.uid
+        )"
+      }
+    },
+
+
+    "games": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+
+
+    "promotions": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+
+
+    "settings": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+
+
+    "notifications": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+
+
+    "tournaments": {
+      ".indexOn": ["gameId", "status"],
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+
+
+    "chats": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+
+
+    "users": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      ".indexOn": ["referralCode", "leaderboardRank"]
+    },
+
+
+    "transactions": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+
+
+    "withdrawals": {
+      ".indexOn": "status",
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+
+
+    "deposits": {
+      ".indexOn": "status",
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+
+
+    "pendingReferrals": {
+      ".indexOn": "status",
+      ".read": "auth != null",
+      ".write": "auth != null"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: aryan-team-premium
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers 2 --bind 0.0.0.0:$PORT
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_EMAIL
+        value: armanmalikh762@gmail.com
+      - key: ADMIN_PASSWORD
+        sync: false

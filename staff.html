@@ -1,0 +1,2791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Staff Panel - Gaming Tournament</title>
+
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        /* --- Dark Theme (identical to Admin Panel) --- */
+        :root {
+            --primary-bg: #0F172A;
+            --secondary-bg: #1E293B;
+            --card-bg: #1E293B;
+            --sidebar-bg: #111827;
+            --text-primary: #E2E8F0;
+            --text-secondary: #94A3B8;
+            --text-muted-custom: #64748B;
+            --accent-color: #FACC15;
+            --accent-gradient: linear-gradient(to right, #FACC15, #FBBF24);
+            --primary-button-bg: #3B82F6;
+            --border-color: #334155;
+            --success-color: #10B981;
+            --danger-color: #EF4444;
+            --warning-color: #F59E0B;
+            --info-color: #60A5FA;
+            --link-color: #9CA3AF;
+            --link-hover-color: #E5E7EB;
+            --placeholder-bg: rgba(100, 116, 139, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            font-family: 'Poppins', sans-serif;
+            padding-top: 60px;
+        }
+        a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+        a:hover {
+            color: #FBBF24;
+        }
+
+        /* Header */
+        .app-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: var(--secondary-bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1030;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .menu-toggle-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            padding: 0 5px;
+            margin-left: -5px;
+            cursor: pointer;
+        }
+        .header-logo {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: #fff;
+            object-fit: cover;
+            border: 1px solid var(--accent-color);
+        }
+        .header-title {
+            font-size: 1rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .staff-email-header {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: none;
+        }
+        @media (min-width: 576px) {
+            .staff-email-header {
+                display: inline;
+            }
+        }
+
+        /* Sidebar Offcanvas */
+        .offcanvas-start {
+            background-color: var(--sidebar-bg);
+            color: var(--link-color);
+            width: 260px !important;
+            border-right: 1px solid var(--border-color);
+        }
+        .offcanvas-header {
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 1.2rem;
+        }
+        .offcanvas-title h5 {
+            color: var(--text-primary);
+            margin-bottom: 0;
+            font-size: 1.1rem;
+        }
+        .btn-close-white {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+        .offcanvas-body {
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: calc(100% - 56px);
+        }
+        .offcanvas-body .nav {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+        .offcanvas-body .nav-link {
+            color: var(--link-color);
+            padding: 0.8rem 1.2rem;
+            border-left: 3px solid transparent;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .offcanvas-body .nav-link.active,
+        .offcanvas-body .nav-link:hover {
+            color: var(--link-hover-color);
+            background-color: rgba(255, 255, 255, 0.05);
+            border-left-color: var(--accent-color);
+        }
+        .offcanvas-body .nav-link i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        .offcanvas-body .nav-link .badge {
+            margin-left: auto;
+        }
+
+        /* Main */
+        .main-content {
+            padding: 20px;
+        }
+        .section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* Login */
+        .login-container {
+            max-width: 400px;
+            margin: 10vh auto;
+            background-color: var(--secondary-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .login-container .card {
+            background-color: transparent;
+            border: none;
+        }
+        .login-container .card-body {
+            padding: 0;
+        }
+
+        /* Loader */
+        #staffLoader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        #staffLoader .spinner-border {
+            color: var(--accent-color);
+            width: 3rem;
+            height: 3rem;
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+        }
+        .card-title {
+            color: var(--text-primary);
+        }
+        .card-body {
+            position: relative;
+        }
+
+        /* Tables */
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .table {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+            margin-bottom: 0;
+        }
+        .table>:not(caption)>*>* {
+            background-color: transparent !important;
+            border-bottom-color: var(--border-color);
+        }
+        .table th {
+            color: var(--text-secondary);
+            font-weight: 500;
+            white-space: nowrap;
+            padding: 0.8rem 1rem;
+        }
+        .table td {
+            vertical-align: middle;
+            padding: 0.7rem 1rem;
+        }
+        .table td .text-muted {
+            color: var(--text-muted-custom) !important;
+        }
+        .table-hover>tbody>tr:hover>* {
+            background-color: rgba(255, 255, 255, 0.03) !important;
+            color: var(--text-primary);
+        }
+        .table img.preview-img {
+            max-width: 60px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            font-size: 0.8em;
+            padding: 0.3em 0.6em;
+            border-radius: 0.25rem;
+        }
+        .text-bg-primary {
+            background-color: #3B82F6 !important;
+        }
+        .text-bg-info {
+            background-color: #0ea5e9 !important;
+        }
+        .text-bg-warning {
+            background-color: #f59e0b !important;
+        }
+        .text-bg-success {
+            background-color: #10b981 !important;
+        }
+        .text-bg-danger {
+            background-color: #ef4444 !important;
+        }
+        .text-bg-secondary {
+            background-color: #6b7280 !important;
+        }
+
+        /* Forms */
+        .form-control,
+        .form-select {
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        .form-control:focus,
+        .form-select:focus {
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.2rem rgba(250, 204, 21, 0.25);
+        }
+        .form-control::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+        .form-control:disabled,
+        .form-select:disabled {
+            background-color: #2d3748;
+            opacity: 0.7;
+        }
+
+        /* Modal */
+        .modal-content {
+            background-color: var(--secondary-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        .modal-header {
+            border-bottom-color: var(--border-color);
+        }
+        .modal-footer {
+            border-top-color: var(--border-color);
+        }
+        .modal-body label {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        /* Buttons */
+        .btn-custom {
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 8px 15px;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: background-color 0.2s ease, filter 0.2s ease;
+        }
+        .btn-custom-primary {
+            background-color: var(--primary-button-bg);
+            color: var(--text-primary);
+        }
+        .btn-custom-primary:hover {
+            background-color: #2563EB;
+        }
+        .btn-custom-secondary {
+            background-color: var(--secondary-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        .btn-custom-secondary:hover {
+            background-color: #334155;
+        }
+        .btn-custom-accent {
+            background: var(--accent-gradient);
+            color: var(--primary-bg);
+            font-weight: 600;
+        }
+        .btn-custom-accent:hover {
+            filter: brightness(1.1);
+        }
+        .btn-custom-success {
+            background-color: var(--success-color);
+            color: #fff;
+        }
+        .btn-custom-success:hover {
+            background-color: #059669;
+        }
+        .btn-custom-danger {
+            background-color: var(--danger-color);
+            color: #fff;
+        }
+        .btn-custom-danger:hover {
+            background-color: #DC2626;
+        }
+
+        /* Dashboard Cards */
+        .dash-card-icon {
+            font-size: 1.8rem;
+            opacity: 0.6;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* Placeholder loading */
+        .loading-placeholder td>div {
+            background-color: var(--placeholder-bg);
+            border-radius: 4px;
+            min-height: 1.2em;
+            animation: placeholder-glow 2s ease-in-out infinite;
+        }
+        @keyframes placeholder-glow {
+            0% {
+                background-color: var(--placeholder-bg);
+            }
+            50% {
+                background-color: rgba(100, 116, 139, 0.2);
+            }
+            100% {
+                background-color: var(--placeholder-bg);
+            }
+        }
+
+        /* Utility */
+        .copy-btn {
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        .copy-btn:hover {
+            opacity: 1;
+        }
+        .action-buttons button,
+        .action-buttons a {
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        /* Tabs */
+        .nav-tabs .nav-link {
+            color: var(--text-secondary);
+            border-color: var(--border-color);
+            border-bottom-color: transparent;
+            margin-bottom: -1px;
+        }
+        .nav-tabs .nav-link.active {
+            color: var(--accent-color);
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            border-bottom-color: var(--card-bg);
+            font-weight: 600;
+        }
+        .nav-tabs {
+            border-bottom-color: var(--border-color);
+        }
+        .card-header {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Chat */
+        #chatMessagesEl {
+            max-height: 50vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column-reverse;
+            padding: 10px;
+            background-color: var(--primary-bg);
+            border-radius: 8px;
+        }
+        .chat-bubble {
+            padding: 8px 14px;
+            border-radius: 18px;
+            margin-top: 10px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        .chat-bubble .sender-name {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+            display: block;
+            color: var(--accent-color);
+        }
+        .chat-bubble .msg-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            display: block;
+            margin-top: 4px;
+            text-align: right;
+        }
+        .my-message {
+            background: var(--primary-button-bg);
+            color: var(--text-primary);
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .other-message {
+            background: var(--secondary-bg);
+            color: var(--text-primary);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+        .other-message .sender-name {
+            color: var(--accent-color);
+        }
+
+        /* Tournament Chat Modal */
+        #tournamentChatModal .modal-body {
+            padding: 0;
+        }
+        #tournamentChatModal .modal-footer {
+            padding: 10px 15px;
+        }
+        #tournamentChatModal .modal-footer .form-control {
+            background-color: var(--primary-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 20px;
+        }
+        #tournamentChatModal .modal-footer .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.2rem rgba(250, 204, 21, 0.25);
+        }
+
+        /* Registered Players modal */
+        #registeredPlayersModal .modal-dialog {
+            max-width: 90%;
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 12px;
+            }
+            .offcanvas-start {
+                width: 280px !important;
+            }
+            .table td,
+            .table th {
+                padding: 0.5rem;
+                font-size: 0.85rem;
+            }
+            .dash-card-icon {
+                font-size: 1.4rem;
+            }
+            .card-body .fs-3 {
+                font-size: 1.6rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loader -->
+    <div id="staffLoader">
+        <div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>
+    </div>
+
+    <!-- ===== LOGIN / AUTH ===== -->
+    <div id="auth-container">
+        <div id="staff-login-section" style="display:block;">
+            <div class="container login-container">
+                <div class="card shadow">
+                    <div class="card-body p-4">
+                        <h2 class="card-title text-center mb-4">Staff Login</h2>
+                        <form id="staffLoginForm">
+                            <div class="mb-3">
+                                <label for="staffEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="staffEmail" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="staffPassword" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="staffPassword" required />
+                            </div>
+                            <div id="staffLoginStatus" class="mt-3"></div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-custom btn-custom-primary btn-lg">Login</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MAIN STAFF PANEL ===== -->
+    <div id="staff-main-area" style="display:none;">
+
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <button class="menu-toggle-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#staffSidebar" aria-controls="staffSidebar">
+                    <i class="bi bi-list"></i>
+                </button>
+                <img src="https://via.placeholder.com/35/1E293B/94A3B8?text=S" alt="Logo" class="header-logo" id="staffHeaderLogo" style="display:none;" />
+                <h1 class="header-title ms-1" id="staffPageTitle">Dashboard</h1>
+            </div>
+            <div class="header-right">
+                <span class="staff-email-header" id="staffUserEmailShort"></span>
+                <button class="btn btn-sm btn-outline-danger" id="staffLogoutBtnHeader"><i class="bi bi-box-arrow-right"></i> Logout</button>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="staffSidebar" aria-labelledby="staffSidebarLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="staffSidebarLabel">Staff Menu</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="nav flex-column">
+                    <li class="nav-item"><a class="nav-link active" href="#" data-section="dashboard-section"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-section="games-section"><i class="bi bi-controller"></i> Games</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-section="promotions-section"><i class="bi bi-images"></i> Promotions</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-section="tournaments-section"><i class="bi bi-trophy"></i> Tournaments</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-section="users-section"><i class="bi bi-people"></i> Users</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-section="notifications-section"><i class="bi bi-bell"></i> Notifications</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-section="chat-section"><i class="bi bi-chat-dots"></i> Tournament Chat</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content" id="staffMainContent">
+
+            <!-- ===== DASHBOARD ===== -->
+            <section id="dashboard-section" class="section active">
+                <h2>Dashboard Overview</h2>
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="card text-bg-primary shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Users</h5>
+                                <p class="card-text fs-3 fw-bold mb-0" id="statTotalUsers">--</p>
+                                <i class="bi bi-people-fill dash-card-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="card text-bg-info shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Games</h5>
+                                <p class="card-text fs-3 fw-bold mb-0" id="statTotalGames">--</p>
+                                <i class="bi bi-controller dash-card-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="card text-bg-success shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Active Tournaments</h5>
+                                <p class="card-text fs-3 fw-bold mb-0" id="statActiveTournaments">--</p>
+                                <i class="bi bi-calendar-check-fill dash-card-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="card text-bg-warning shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Live Tournaments</h5>
+                                <p class="card-text fs-3 fw-bold mb-0" id="statLiveTournaments">--</p>
+                                <i class="bi bi-broadcast dash-card-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="card text-bg-secondary shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Completed</h5>
+                                <p class="card-text fs-3 fw-bold mb-0" id="statCompletedTournaments">--</p>
+                                <i class="bi bi-flag-fill dash-card-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="card text-bg-primary shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Joined Players</h5>
+                                <p class="card-text fs-3 fw-bold mb-0" id="statJoinedPlayers">--</p>
+                                <i class="bi bi-person-plus-fill dash-card-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="dashboardStatus"></div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Latest Activity</h5>
+                                <div id="latestActivityContainer" class="table-responsive">
+                                    <p class="text-secondary">Loading activity...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== GAMES ===== -->
+            <section id="games-section" class="section">
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <h2>Manage Games</h2>
+                    <button class="btn btn-custom btn-custom-success btn-sm" data-bs-toggle="modal" data-bs-target="#gameModal" id="addNewGameBtn"><i class="bi bi-plus-circle"></i> Add Game</button>
+                </div>
+                <div id="gamesStatus" class="mb-3"></div>
+                <div class="table-responsive card">
+                    <table class="table table-dark table-hover mb-0">
+                        <thead><tr><th>Image</th><th>Name</th><th>Game ID</th><th>Actions</th></tr></thead>
+                        <tbody id="gamesTableBody">
+                            <tr class="loading-placeholder"><td colspan="4"><div class="placeholder w-100 py-3"></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ===== PROMOTIONS ===== -->
+            <section id="promotions-section" class="section">
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <h2>Manage Promotions</h2>
+                    <button class="btn btn-custom btn-custom-success btn-sm" data-bs-toggle="modal" data-bs-target="#promotionModal" id="addNewPromotionBtn"><i class="bi bi-plus-circle"></i> Add Promotion</button>
+                </div>
+                <div id="promotionsStatus" class="mb-3"></div>
+                <div class="table-responsive card">
+                    <table class="table table-dark table-hover mb-0">
+                        <thead><tr><th>Image</th><th>Link</th><th>Actions</th></tr></thead>
+                        <tbody id="promotionsTableBody">
+                            <tr class="loading-placeholder"><td colspan="3"><div class="placeholder w-100 py-3"></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ===== TOURNAMENTS ===== -->
+            <section id="tournaments-section" class="section">
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <h2>Manage Tournaments</h2>
+                    <button class="btn btn-custom btn-custom-success btn-sm" data-bs-toggle="modal" data-bs-target="#addTournamentModal" id="addNewTournamentBtn"><i class="bi bi-plus-circle"></i> Add Tournament</button>
+                </div>
+                <div id="tournamentsStatus" class="mb-3"></div>
+                <div class="table-responsive card">
+                    <table class="table table-dark table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Game</th>
+                                <th>Fee</th>
+                                <th>Prize</th>
+                                <th>Start Time</th>
+                                <th>Status</th>
+                                <th>Players</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tournamentsTableBody">
+                            <tr class="loading-placeholder"><td colspan="8"><div class="placeholder w-100 py-3"></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ===== USERS ===== -->
+            <section id="users-section" class="section">
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <h2>Manage Users</h2>
+                    <div>
+                        <input type="search" class="form-control form-control-sm" id="userSearchInput" placeholder="Search by name or email..." style="min-width:200px;" />
+                    </div>
+                </div>
+                <div id="usersStatus" class="mb-3"></div>
+                <div class="table-responsive card">
+                    <table class="table table-dark table-hover mb-0">
+                        <thead>
+                            <tr><th>UID</th><th>Display Name</th><th>Email</th><th>Status</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <tr class="loading-placeholder"><td colspan="5"><div class="placeholder w-100 py-3"></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ===== NOTIFICATIONS ===== -->
+            <section id="notifications-section" class="section">
+                <h2>Send Notifications</h2>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Send Global Notification (to all users)</h5>
+                        <form id="globalNotificationForm">
+                            <div class="mb-3">
+                                <label for="globalNotifTitle" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="globalNotifTitle" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="globalNotifMessage" class="form-label">Message</label>
+                                <textarea class="form-control" id="globalNotifMessage" rows="3" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="globalNotifImageUrl" class="form-label">Image URL (Optional)</label>
+                                <input type="url" class="form-control" id="globalNotifImageUrl" placeholder="https://example.com/image.png" />
+                            </div>
+                            <button type="submit" class="btn btn-custom btn-custom-primary">Send to All Users</button>
+                            <div id="globalNotificationStatus" class="mt-3"></div>
+                        </form>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Global Notification History</h5>
+                        <div id="globalNotificationsHistory" class="table-responsive">
+                            <p class="text-secondary">Loading history...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Send Tournament Notification</h5>
+                        <form id="tournamentNotificationForm">
+                            <div class="mb-3">
+                                <label for="tournamentNotifSelect" class="form-label">Select Tournament</label>
+                                <select class="form-select" id="tournamentNotifSelect" required>
+                                    <option value="">-- Loading tournaments --</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tournamentNotifTitle" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="tournamentNotifTitle" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="tournamentNotifMessage" class="form-label">Message</label>
+                                <textarea class="form-control" id="tournamentNotifMessage" rows="3" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-custom btn-custom-accent">Send to Tournament Players</button>
+                            <div id="tournamentNotificationStatus" class="mt-3"></div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== TOURNAMENT CHAT ===== -->
+            <section id="chat-section" class="section">
+                <h2>Tournament Chat Moderation</h2>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row align-items-end mb-3">
+                            <div class="col-md-6">
+                                <label for="chatTournamentSelect" class="form-label">Select Tournament</label>
+                                <select class="form-select" id="chatTournamentSelect">
+                                    <option value="">-- Select Tournament --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mt-2 mt-md-0">
+                                <button class="btn btn-custom btn-custom-primary w-100" id="loadChatMessagesBtn"><i class="bi bi-chat-dots"></i> Load Chat</button>
+                            </div>
+                            <div class="col-md-3 mt-2 mt-md-0">
+                                <button class="btn btn-custom btn-custom-danger w-100" id="refreshChatBtn"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+                            </div>
+                        </div>
+                        <div id="chatStatus" class="mb-3"></div>
+                        <div id="chatMessagesEl" style="max-height:55vh; overflow-y:auto; background:var(--primary-bg); border-radius:8px; padding:15px; border:1px solid var(--border-color);">
+                            <p class="text-secondary text-center">Select a tournament and click "Load Chat".</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ===== MODALS ===== -->
+
+    <!-- Game Modal -->
+    <div class="modal fade" id="gameModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="gameModalTitle">Add New Game</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="gameForm">
+                        <input type="hidden" id="gameEditId" />
+                        <div class="mb-3">
+                            <label for="gameName" class="form-label">Game Name</label>
+                            <input type="text" class="form-control" id="gameName" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="gameImageUrl" class="form-label">Image URL</label>
+                            <input type="url" class="form-control" id="gameImageUrl" required />
+                            <small class="text-secondary">Direct image URL (e.g., from ImgBB).</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="gameImageFile" class="form-label">Upload New Image (Optional)</label>
+                            <input class="form-control" type="file" id="gameImageFile" accept="image/*" />
+                            <div class="imgbb-upload-status mt-2"></div>
+                        </div>
+                        <div id="gameStatus" class="mt-2"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-custom btn-custom-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-custom btn-custom-primary" id="saveGameBtn">Save Game</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Promotion Modal -->
+    <div class="modal fade" id="promotionModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="promotionModalTitle">Add New Promotion</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="promotionForm">
+                        <input type="hidden" id="promotionEditId" />
+                        <div class="mb-3">
+                            <label for="promoImageUrl" class="form-label">Image URL</label>
+                            <input type="url" class="form-control" id="promoImageUrl" required />
+                            <small class="text-secondary">Direct image URL (e.g., from ImgBB).</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="promoImageFile" class="form-label">Upload New Image (Optional)</label>
+                            <input class="form-control" type="file" id="promoImageFile" accept="image/*" />
+                            <div class="imgbb-upload-status mt-2"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="promoLink" class="form-label">Link (Optional)</label>
+                            <input type="url" class="form-control" id="promoLink" />
+                        </div>
+                        <div id="promotionStatus" class="mt-2"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-custom btn-custom-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-custom btn-custom-primary" id="savePromotionBtn">Save Promotion</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tournament Modal -->
+    <div class="modal fade" id="addTournamentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tournamentModalTitle">Add New Tournament</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="tournamentForm">
+                        <input type="hidden" id="tournamentEditId" />
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="tournamentGame" class="form-label">Game</label>
+                                <select class="form-select" id="tournamentGame" required></select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="tournamentName" class="form-label">Tournament Name</label>
+                                <input type="text" class="form-control" id="tournamentName" required />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="tournamentStartTime" class="form-label">Start Date & Time</label>
+                                <input type="datetime-local" class="form-control" id="tournamentStartTime" required />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="tournamentStatus" class="form-label">Status</label>
+                                <select class="form-select" id="tournamentStatus" required>
+                                    <option value="upcoming">Upcoming</option>
+                                    <option value="ongoing">Ongoing</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="result">Result</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="tournamentEntryFee" class="form-label">Entry Fee (₹)</label>
+                                <input type="number" class="form-control" id="tournamentEntryFee" min="0" value="0" step="any" />
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="tournamentPrizePool" class="form-label">Total Prize Pool (₹)</label>
+                                <input type="number" class="form-control" id="tournamentPrizePool" min="0" value="0" step="any" />
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="tournamentPerKill" class="form-label">Per Kill Prize (₹)</label>
+                                <input type="number" class="form-control" id="tournamentPerKill" min="0" value="0" step="any" />
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="tournamentMaxPlayers" class="form-label">Max Players (0 for Unlimited)</label>
+                                <input type="number" class="form-control" id="tournamentMaxPlayers" min="0" value="0" />
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="tournamentMode" class="form-label">Mode</label>
+                                <select class="form-select" id="tournamentMode">
+                                    <option value="Solo">Solo</option>
+                                    <option value="Duo">Duo</option>
+                                    <option value="Squad">Squad</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="tournamentTags" class="form-label">Tags (comma-separated)</label>
+                                <input type="text" class="form-control" id="tournamentTags" placeholder="e.g., Erangel, TPP" />
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="tournamentBannerUrl" class="form-label">Banner URL (16:9)</label>
+                                <input type="url" class="form-control" id="tournamentBannerUrl" placeholder="https://example.com/banner.jpg" />
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="tournamentDescription" class="form-label">Description / Rules</label>
+                                <textarea class="form-control" id="tournamentDescription" rows="4"></textarea>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="tournamentRoomId" class="form-label">Room ID</label>
+                                <input type="text" class="form-control" id="tournamentRoomId" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="tournamentRoomPassword" class="form-label">Room Password</label>
+                                <input type="text" class="form-control" id="tournamentRoomPassword" />
+                            </div>
+                            <div class="form-check mb-3 ms-2">
+                                <input class="form-check-input" type="checkbox" id="tournamentShowIdPass" />
+                                <label class="form-check-label" for="tournamentShowIdPass">Show ID/Pass?</label>
+                            </div>
+                        </div>
+                        <div id="addTournamentStatus" class="mt-2"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-custom btn-custom-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-custom btn-custom-primary" id="saveTournamentBtn">Save Tournament</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Modal (View/Edit/Ban) -->
+    <div class="modal fade" id="userModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userModalTitle">User Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>User Info</h5>
+                            <p><strong>UID:</strong> <small id="userDetailUid" class="text-muted user-uid-copy"></small> <i class="bi bi-clipboard copy-btn ms-1" data-target="#userDetailUid" title="Copy UID"></i></p>
+                            <p><strong>Email:</strong> <span id="userDetailEmail"></span></p>
+                            <p><strong>Name:</strong> <span id="userDetailName"></span></p>
+                            <p><strong>Created At:</strong> <span id="userDetailCreatedAt">N/A</span></p>
+                            <hr />
+                            <h5>Status & Actions</h5>
+                            <p>Current Status: <span id="userDetailStatus" class="fw-bold"></span></p>
+                            <button class="btn btn-sm mb-2" id="userBlockBtn"></button>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Edit Display Name</h5>
+                            <form id="editDisplayNameForm">
+                                <input type="hidden" id="editNameUserUid" />
+                                <div class="mb-3">
+                                    <label for="editDisplayNameInput" class="form-label">New Display Name</label>
+                                    <input type="text" class="form-control" id="editDisplayNameInput" required />
+                                </div>
+                                <button type="submit" class="btn btn-custom btn-custom-primary">Update Name</button>
+                                <div id="editNameStatus" class="mt-2"></div>
+                            </form>
+                            <hr />
+                            <h5>Send Notification (Individual)</h5>
+                            <form id="individualNotificationForm">
+                                <div class="mb-2">
+                                    <label for="individualNotifTitle" class="form-label">Title</label>
+                                    <input type="text" class="form-control form-control-sm" id="individualNotifTitle" required />
+                                </div>
+                                <div class="mb-2">
+                                    <label for="individualNotifMessage" class="form-label">Message</label>
+                                    <textarea class="form-control form-control-sm" id="individualNotifMessage" rows="2" required></textarea>
+                                </div>
+                                <div class="mb-2">
+                                    <label for="individualNotifImageUrl" class="form-label">Image URL (Optional)</label>
+                                    <input type="url" class="form-control form-control-sm" id="individualNotifImageUrl" />
+                                </div>
+                                <button type="submit" class="btn btn-custom btn-custom-info btn-sm">Send to this User</button>
+                                <div id="individualNotificationStatus" class="mt-2"></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-custom btn-custom-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registered Players Modal -->
+    <div class="modal fade" id="registeredPlayersModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registeredPlayersModalTitle">Registered Players</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tournament: <strong id="registeredPlayersTournamentName"></strong></p>
+                    <div id="registeredPlayersStatus" class="mb-2"></div>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Registered By</th>
+                                    <th>Player 1 (Self) Details</th>
+                                    <th>Player 2 (Teammate) Details</th>
+                                    <th>Joined At</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="registeredPlayersTableBody">
+                                <tr><td colspan="5" class="text-center text-secondary p-3">No players registered.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-custom btn-custom-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tournament Chat Modal -->
+    <div class="modal fade" id="tournamentChatModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tournamentChatModalTitle">Tournament Chat</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0 d-flex flex-column">
+                    <div id="chatMessagesModalEl" class="flex-grow-1" style="max-height:50vh; overflow-y:auto; padding:15px; background:var(--primary-bg);">
+                        <p class="text-secondary text-center">Loading messages...</p>
+                    </div>
+                    <div id="chatReplyContextEl" style="display:none; padding:8px 15px; background:var(--secondary-bg); border-top:1px solid var(--border-color);">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-secondary small">Replying to <strong id="replyToNameEl">...</strong></span>
+                            <button type="button" class="btn-close btn-close-white" id="cancelReplyBtn" style="font-size:0.8rem;"></button>
+                        </div>
+                        <p id="replyToMessageEl" class="small text-muted mb-0" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">...</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <form id="chatForm" class="d-flex w-100 gap-2">
+                        <input type="text" class="form-control" id="chatMessageInput" placeholder="Type a message..." required autocomplete="off" />
+                        <button type="submit" class="btn btn-custom btn-custom-primary"><i class="bi bi-send-fill"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ===== SCRIPTS ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+    <!-- Firebase Modular SDK -->
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js",
+                "firebase/auth": "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js",
+                "firebase/database": "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js"
+            }
+        }
+    </script>
+
+    <script type="module">
+        // ============================================================
+        // IMPORTS
+        // ============================================================
+        import { initializeApp } from "firebase/app";
+        import {
+            getAuth,
+            signInWithEmailAndPassword,
+            signOut,
+            onAuthStateChanged
+        } from "firebase/auth";
+        import {
+            getDatabase,
+            ref,
+            get,
+            set,
+            update,
+            push,
+            remove,
+            query,
+            orderByChild,
+            equalTo,
+            onValue,
+            off,
+            serverTimestamp,
+            runTransaction
+        } from "firebase/database";
+
+        // ============================================================
+        // FIREBASE CONFIG (exact as provided)
+        // ============================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCkKPqS2gOBKtkzFreMbbmDn3OWb-yXsVI",
+            authDomain: "ff-pro-league.firebaseapp.com",
+            databaseURL: "https://ff-pro-league-default-rtdb.firebaseio.com",
+            projectId: "ff-pro-league",
+            storageBucket: "ff-pro-league.firebasestorage.app",
+            messagingSenderId: "512626629357",
+            appId: "1:512626629357:web:3d42322fc7aa9e8a6f4ae4",
+            measurementId: "G-QFRW41HPML"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        // ============================================================
+        // DOM REFS
+        // ============================================================
+        const $ = (id) => document.getElementById(id);
+        const qs = (sel, ctx = document) => ctx.querySelector(sel);
+        const qsa = (sel, ctx = document) => ctx.querySelectorAll(sel);
+
+        const els = {
+            loader: $('staffLoader'),
+            authContainer: $('auth-container'),
+            loginSection: $('staff-login-section'),
+            mainArea: $('staff-main-area'),
+            loginForm: $('staffLoginForm'),
+            loginEmail: $('staffEmail'),
+            loginPassword: $('staffPassword'),
+            loginStatus: $('staffLoginStatus'),
+            logoutBtn: $('staffLogoutBtnHeader'),
+            staffEmailShort: $('staffUserEmailShort'),
+            staffPageTitle: $('staffPageTitle'),
+            staffHeaderLogo: $('staffHeaderLogo'),
+            sidebarLinks: qsa('#staffSidebar .nav-link'),
+            sections: qsa('#staffMainContent .section'),
+            sidebar: $('staffSidebar'),
+
+            // Dashboard
+            statTotalUsers: $('statTotalUsers'),
+            statTotalGames: $('statTotalGames'),
+            statActiveTournaments: $('statActiveTournaments'),
+            statLiveTournaments: $('statLiveTournaments'),
+            statCompletedTournaments: $('statCompletedTournaments'),
+            statJoinedPlayers: $('statJoinedPlayers'),
+            dashboardStatus: $('dashboardStatus'),
+            latestActivityContainer: $('latestActivityContainer'),
+
+            // Games
+            gamesTableBody: $('gamesTableBody'),
+            gamesStatus: $('gamesStatus'),
+            gameModal: $('gameModal'),
+            gameModalTitle: $('gameModalTitle'),
+            gameForm: $('gameForm'),
+            gameEditId: $('gameEditId'),
+            gameName: $('gameName'),
+            gameImageUrl: $('gameImageUrl'),
+            gameImageFile: $('gameImageFile'),
+            saveGameBtn: $('saveGameBtn'),
+            gameStatus: $('gameStatus'),
+            addNewGameBtn: $('addNewGameBtn'),
+
+            // Promotions
+            promotionsTableBody: $('promotionsTableBody'),
+            promotionsStatus: $('promotionsStatus'),
+            promotionModal: $('promotionModal'),
+            promotionModalTitle: $('promotionModalTitle'),
+            promotionForm: $('promotionForm'),
+            promotionEditId: $('promotionEditId'),
+            promoImageUrl: $('promoImageUrl'),
+            promoImageFile: $('promoImageFile'),
+            promoLink: $('promoLink'),
+            savePromotionBtn: $('savePromotionBtn'),
+            promotionStatus: $('promotionStatus'),
+            addNewPromotionBtn: $('addNewPromotionBtn'),
+
+            // Tournaments
+            tournamentsTableBody: $('tournamentsTableBody'),
+            tournamentsStatus: $('tournamentsStatus'),
+            addTournamentModal: $('addTournamentModal'),
+            tournamentModalTitle: $('tournamentModalTitle'),
+            tournamentForm: $('tournamentForm'),
+            tournamentEditId: $('tournamentEditId'),
+            tournamentGame: $('tournamentGame'),
+            tournamentName: $('tournamentName'),
+            tournamentStartTime: $('tournamentStartTime'),
+            tournamentStatus: $('tournamentStatus'),
+            tournamentEntryFee: $('tournamentEntryFee'),
+            tournamentPrizePool: $('tournamentPrizePool'),
+            tournamentPerKill: $('tournamentPerKill'),
+            tournamentMaxPlayers: $('tournamentMaxPlayers'),
+            tournamentMode: $('tournamentMode'),
+            tournamentTags: $('tournamentTags'),
+            tournamentBannerUrl: $('tournamentBannerUrl'),
+            tournamentDescription: $('tournamentDescription'),
+            tournamentRoomId: $('tournamentRoomId'),
+            tournamentRoomPassword: $('tournamentRoomPassword'),
+            tournamentShowIdPass: $('tournamentShowIdPass'),
+            saveTournamentBtn: $('saveTournamentBtn'),
+            addTournamentStatus: $('addTournamentStatus'),
+            addNewTournamentBtn: $('addNewTournamentBtn'),
+
+            // Users
+            usersTableBody: $('usersTableBody'),
+            usersStatus: $('usersStatus'),
+            userSearchInput: $('userSearchInput'),
+            userModal: $('userModal'),
+            userModalTitle: $('userModalTitle'),
+            userDetailUid: $('userDetailUid'),
+            userDetailEmail: $('userDetailEmail'),
+            userDetailName: $('userDetailName'),
+            userDetailCreatedAt: $('userDetailCreatedAt'),
+            userDetailStatus: $('userDetailStatus'),
+            userBlockBtn: $('userBlockBtn'),
+            editDisplayNameForm: $('editDisplayNameForm'),
+            editNameUserUid: $('editNameUserUid'),
+            editDisplayNameInput: $('editDisplayNameInput'),
+            editNameStatus: $('editNameStatus'),
+
+            // Notifications
+            globalNotificationForm: $('globalNotificationForm'),
+            globalNotifTitle: $('globalNotifTitle'),
+            globalNotifMessage: $('globalNotifMessage'),
+            globalNotifImageUrl: $('globalNotifImageUrl'),
+            globalNotificationStatus: $('globalNotificationStatus'),
+            globalNotificationsHistory: $('globalNotificationsHistory'),
+            tournamentNotificationForm: $('tournamentNotificationForm'),
+            tournamentNotifSelect: $('tournamentNotifSelect'),
+            tournamentNotifTitle: $('tournamentNotifTitle'),
+            tournamentNotifMessage: $('tournamentNotifMessage'),
+            tournamentNotificationStatus: $('tournamentNotificationStatus'),
+
+            // Chat
+            chatTournamentSelect: $('chatTournamentSelect'),
+            loadChatMessagesBtn: $('loadChatMessagesBtn'),
+            refreshChatBtn: $('refreshChatBtn'),
+            chatStatus: $('chatStatus'),
+            chatMessagesEl: $('chatMessagesEl'),
+            tournamentChatModal: $('tournamentChatModal'),
+            tournamentChatModalTitle: $('tournamentChatModalTitle'),
+            chatMessagesModalEl: $('chatMessagesModalEl'),
+            chatReplyContextEl: $('chatReplyContextEl'),
+            replyToNameEl: $('replyToNameEl'),
+            replyToMessageEl: $('replyToMessageEl'),
+            cancelReplyBtn: $('cancelReplyBtn'),
+            chatForm: $('chatForm'),
+            chatMessageInput: $('chatMessageInput'),
+
+            // Registered Players
+            registeredPlayersModal: $('registeredPlayersModal'),
+            registeredPlayersModalTitle: $('registeredPlayersModalTitle'),
+            registeredPlayersTournamentName: $('registeredPlayersTournamentName'),
+            registeredPlayersTableBody: $('registeredPlayersTableBody'),
+            registeredPlayersStatus: $('registeredPlayersStatus'),
+            individualNotificationForm: $('individualNotificationForm'),
+            individualNotifTitle: $('individualNotifTitle'),
+            individualNotifMessage: $('individualNotifMessage'),
+            individualNotifImageUrl: $('individualNotifImageUrl'),
+            individualNotificationStatus: $('individualNotificationStatus'),
+        };
+
+        // ============================================================
+        // STATE
+        // ============================================================
+        let currentStaffUser = null;
+        let gameDataCache = {};
+        let fullUserDataCache = {};
+        let userDataCache = {};
+        let appSettings = {};
+        let dbListeners = {};
+        let currentEditingTournamentId = null;
+        let currentChatTournamentId = null;
+        let chatListener = null;
+        let currentReply = null;
+
+        // ============================================================
+        // UTILITY
+        // ============================================================
+        const showLoader = (show) => {
+            els.loader.style.display = show ? 'flex' : 'none';
+        };
+
+        const showStatus = (el, msg, type = 'danger', autohide = 5000) => {
+            if (!el) return;
+            const id = `status-${Date.now()}`;
+            el.style.display = 'block';
+            el.innerHTML =
+                `<div id="${id}" class="alert alert-${type} alert-dismissible fade show" role="alert">${sanitizeHTML(msg)}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+            if (autohide > 0) {
+                setTimeout(() => {
+                    const a = document.getElementById(id);
+                    if (a) a.remove();
+                }, autohide);
+            }
+        };
+
+        const clearStatus = (el) => {
+            if (el) { el.innerHTML = '';
+                el.style.display = 'none'; }
+        };
+
+        const sanitizeHTML = (str) => {
+            if (!str) return '';
+            const d = document.createElement('div');
+            d.textContent = String(str);
+            return d.innerHTML;
+        };
+
+        const formatDate = (ts) => {
+            if (!ts) return 'N/A';
+            if (typeof ts === 'object' && ts?.sv) return 'Pending...';
+            const n = Number(ts);
+            if (isNaN(n) || n <= 0) return 'Invalid Date';
+            try { return new Date(n).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }); } catch { return 'Invalid Date'; }
+        };
+
+        const formatCurrency = (amt) => {
+            const n = Number(amt);
+            return isNaN(n) ? '₹--' : `₹${n.toFixed(2)}`;
+        };
+
+        const tableLoadingHtml = (cols) =>
+            `<tr class="loading-placeholder"><td colspan="${cols}"><div class="placeholder w-100 py-3"></div></td></tr>`.repeat(2);
+
+        const copyToClipboard = (sel) => {
+            const el = document.querySelector(sel);
+            if (!el) return;
+            const txt = el.textContent.trim();
+            if (!txt) return;
+            navigator.clipboard?.writeText(txt).then(() => {
+                const toast = document.createElement('div');
+                toast.className = 'toast position-fixed bottom-0 end-0 p-3 m-3 text-bg-success border-0';
+                toast.setAttribute('role', 'alert');
+                toast.innerHTML = '<div class="toast-body">Copied!</div>';
+                document.body.appendChild(toast);
+                const bsToast = new bootstrap.Toast(toast);
+                bsToast.show();
+                toast.addEventListener('hidden.bs.toast', () => toast.remove());
+            }).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = txt;
+                ta.style.position = 'fixed';
+                ta.style.left = '-9999px';
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand('copy');
+                    alert('Copied!'); } catch { alert('Copy failed.'); }
+                document.body.removeChild(ta);
+            });
+        };
+
+        const IMGBB_API_KEY = '1579b196953465c653d3639ab091448c';
+
+        const uploadToImgBB = async (file, statusEl) => {
+            if (!file) throw new Error('No file selected.');
+            const fd = new FormData();
+            fd.append('image', file);
+            if (statusEl) { statusEl.textContent = 'Uploading...';
+                statusEl.style.display = 'block'; }
+            try {
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: fd });
+                if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error?.message || 'Upload failed');
+                if (statusEl) statusEl.textContent = 'Upload complete!';
+                return data.data.url;
+            } catch (e) {
+                if (statusEl) { statusEl.textContent = `Error: ${e.message}`;
+                    statusEl.style.color = 'var(--danger-color)'; }
+                throw e;
+            }
+        };
+
+        const getModalInstance = (el) => {
+            if (!el) return null;
+            try { return bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el); } catch { return null; }
+        };
+
+        const getOffcanvasInstance = (el) => {
+            if (!el) return null;
+            try { return bootstrap.Offcanvas.getInstance(el) || new bootstrap.Offcanvas(el); } catch { return null; }
+        };
+
+        // ============================================================
+        // AUTH
+        // ============================================================
+        const handleLogin = async (e) => {
+            e.preventDefault();
+            const email = els.loginEmail.value.trim();
+            const pass = els.loginPassword.value;
+            clearStatus(els.loginStatus);
+            if (!email || !pass) { showStatus(els.loginStatus, 'Email and password required.', 'warning'); return; }
+            showLoader(true);
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+            } catch (err) {
+                console.error('Login error:', err);
+                let msg = 'Login failed.';
+                if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code ===
+                    'auth/user-not-found') msg = 'Invalid email or password.';
+                else if (err.code === 'auth/invalid-email') msg = 'Invalid email format.';
+                else if (err.code === 'auth/too-many-requests') msg = 'Too many attempts.';
+                else if (err.code === 'auth/network-request-failed') msg = 'Network error.';
+                else msg = `Error: ${err.message}`;
+                showStatus(els.loginStatus, msg, 'danger', false);
+                showLoader(false);
+            }
+        };
+
+        const handleLogout = async () => {
+            showLoader(true);
+            try { await signOut(auth); } catch (e) { console.error('Logout error:', e);
+                alert('Logout failed.'); }
+        };
+
+        const handleAuthState = async (user) => {
+            showLoader(true);
+            if (user) {
+                currentStaffUser = user;
+                els.staffEmailShort.textContent = user.email;
+                els.authContainer.style.display = 'none';
+                els.mainArea.style.display = 'block';
+                await loadSettings();
+                await loadStaffData();
+                showSection('dashboard-section');
+                setupRealtimeListeners();
+                showLoader(false);
+            } else {
+                currentStaffUser = null;
+                detachAllListeners();
+                els.authContainer.style.display = 'block';
+                els.mainArea.style.display = 'none';
+                els.staffEmailShort.textContent = '';
+                els.staffPageTitle.textContent = 'Staff Panel';
+                els.staffHeaderLogo.style.display = 'none';
+                document.title = 'Staff Panel';
+                showLoader(false);
+            }
+        };
+
+        // ============================================================
+        // NAVIGATION
+        // ============================================================
+        const showSection = (id) => {
+            els.sections.forEach(s => s.classList.remove('active'));
+            const target = document.getElementById(id);
+            if (target) target.classList.add('active');
+            els.sidebarLinks.forEach(l => {
+                l.classList.toggle('active', l.dataset.section === id);
+            });
+            const link = qs(`#staffSidebar .nav-link[data-section="${id}"]`);
+            const title = link ? link.textContent.trim() : id.replace('-section', '').replace('-', ' ');
+            els.staffPageTitle.textContent = title.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            const off = getOffcanvasInstance(els.sidebar);
+            if (off?._isShown) off.hide();
+            loadSectionData(id);
+        };
+
+        const loadSectionData = (id) => {
+            clearStatus(els.dashboardStatus);
+            clearStatus(els.gamesStatus);
+            clearStatus(els.promotionsStatus);
+            clearStatus(els.tournamentsStatus);
+            clearStatus(els.usersStatus);
+            clearStatus(els.chatStatus);
+            switch (id) {
+                case 'dashboard-section':
+                    loadDashboard();
+                    break;
+                case 'games-section':
+                    loadGames();
+                    break;
+                case 'promotions-section':
+                    loadPromotions();
+                    break;
+                case 'tournaments-section':
+                    loadTournaments();
+                    break;
+                case 'users-section':
+                    loadUsers();
+                    break;
+                case 'notifications-section':
+                    loadNotificationHistory();
+                    populateTournamentNotifSelect();
+                    break;
+                case 'chat-section':
+                    populateChatTournamentSelect();
+                    break;
+            }
+        };
+
+        // ============================================================
+        // SETTINGS
+        // ============================================================
+        const loadSettings = async () => {
+            try {
+                const snap = await get(ref(db, 'settings'));
+                if (snap.exists()) {
+                    appSettings = snap.val();
+                    if (appSettings.logoUrl) {
+                        els.staffHeaderLogo.src = appSettings.logoUrl;
+                        els.staffHeaderLogo.style.display = 'inline-block';
+                    }
+                    document.title = `${appSettings.appName || 'Staff'} - Staff Panel`;
+                }
+            } catch (e) { console.error('Settings load error:', e); }
+        };
+
+        // ============================================================
+        // DASHBOARD
+        // ============================================================
+        const loadDashboard = async () => {
+            const stats = {
+                users: 0,
+                games: 0,
+                active: 0,
+                live: 0,
+                completed: 0,
+                joined: 0
+            };
+            try {
+                const [uSnap, gSnap, tSnap] = await Promise.all([
+                    get(ref(db, 'users')),
+                    get(ref(db, 'games')),
+                    get(ref(db, 'tournaments'))
+                ]);
+                if (uSnap.exists()) stats.users = uSnap.size;
+                if (gSnap.exists()) stats.games = gSnap.size;
+                if (tSnap.exists()) {
+                    tSnap.forEach(child => {
+                        const t = child.val();
+                        if (t.status === 'upcoming') stats.active++;
+                        else if (t.status === 'ongoing') { stats.active++;
+                            stats.live++; }
+                        else if (t.status === 'completed' || t.status === 'result') stats.completed++;
+                        if (t.registeredPlayers) stats.joined += Object.keys(t.registeredPlayers).length;
+                    });
+                }
+                els.statTotalUsers.textContent = stats.users;
+                els.statTotalGames.textContent = stats.games;
+                els.statActiveTournaments.textContent = stats.active;
+                els.statLiveTournaments.textContent = stats.live;
+                els.statCompletedTournaments.textContent = stats.completed;
+                els.statJoinedPlayers.textContent = stats.joined;
+
+                // Latest activity
+                let activityHtml =
+                '<div class="table-responsive"><table class="table table-dark table-sm table-hover"><thead><tr><th>Time</th><th>Event</th></tr></thead><tbody>';
+                const now = Date.now();
+                const recent = [];
+                if (tSnap.exists()) {
+                    tSnap.forEach(child => {
+                        const t = child.val();
+                        if (t.startTime && t.startTime > now - 86400000 * 7) {
+                            recent.push({
+                                time: t.startTime,
+                                text: `Tournament "${t.name}" ${t.status}`
+                            });
+                        }
+                    });
+                }
+                recent.sort((a, b) => b.time - a.time);
+                const top = recent.slice(0, 10);
+                if (top.length === 0) activityHtml +=
+                    '<tr><td colspan="2" class="text-center text-secondary">No recent activity.</td></tr>';
+                else {
+                    top.forEach(item => {
+                        activityHtml +=
+                            `<tr><td>${formatDate(item.time)}</td><td>${sanitizeHTML(item.text)}</td></tr>`;
+                    });
+                }
+                activityHtml += '</tbody></table></div>';
+                els.latestActivityContainer.innerHTML = activityHtml;
+            } catch (e) {
+                console.error('Dashboard error:', e);
+                showStatus(els.dashboardStatus, `Error: ${e.message}`, 'danger');
+            }
+        };
+
+        // ============================================================
+        // GAMES CRUD
+        // ============================================================
+        const loadGames = async () => {
+            els.gamesTableBody.innerHTML = tableLoadingHtml(4);
+            try {
+                const snap = await get(ref(db, 'games'));
+                let html = '';
+                if (snap.exists()) {
+                    snap.forEach(child => {
+                        const id = child.key;
+                        const g = child.val();
+                        if (g && g.name) {
+                            gameDataCache[id] = g.name;
+                            html += `<tr>
+                                <td><img src="${sanitizeHTML(g.imageUrl || 'https://via.placeholder.com/60x40/1E293B/94A3B8?text=N/A')}" class="preview-img" alt="${sanitizeHTML(g.name)}" /></td>
+                                <td>${sanitizeHTML(g.name)}</td>
+                                <td><small class="text-muted">${sanitizeHTML(id)}</small> <i class="bi bi-clipboard copy-btn ms-1" data-target="td:nth-child(3) > small" title="Copy Game ID"></i></td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-info btn-edit-game" data-id="${sanitizeHTML(id)}" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                                    <button class="btn btn-sm btn-danger btn-delete-game" data-id="${sanitizeHTML(id)}" title="Delete"><i class="bi bi-trash"></i></button>
+                                </td>
+                            </tr>`;
+                        }
+                    });
+                }
+                els.gamesTableBody.innerHTML = html ||
+                    `<tr><td colspan="4" class="text-center text-secondary p-3">No games found.</td></tr>`;
+            } catch (e) {
+                console.error('Games load error:', e);
+                els.gamesTableBody.innerHTML =
+                    `<tr><td colspan="4" class="text-center text-danger p-3">Error: ${e.message}</td></tr>`;
+                showStatus(els.gamesStatus, `Error: ${e.message}`, 'danger');
+            }
+        };
+
+        const saveGame = async () => {
+            const isEdit = !!els.gameEditId.value;
+            const name = els.gameName.value.trim();
+            const imgUrl = els.gameImageUrl.value.trim();
+            const file = els.gameImageFile.files[0];
+            const statusEl = els.gameStatus;
+            const imgbbEl = els.gameForm.querySelector('.imgbb-upload-status');
+            clearStatus(statusEl);
+            if (!name) { showStatus(statusEl, 'Game name required.', 'warning'); return; }
+            if (!imgUrl && !file && !isEdit) { showStatus(statusEl, 'Image URL or file required.', 'warning'); return; }
+            if (!imgUrl && !file && isEdit) { showStatus(statusEl, 'Image URL cannot be empty.', 'warning'); return; }
+            showLoader(true);
+            els.saveGameBtn.disabled = true;
+            try {
+                let finalUrl = imgUrl;
+                if (file) finalUrl = await uploadToImgBB(file, imgbbEl);
+                if (!finalUrl) throw new Error('No image URL available.');
+                const data = { name, imageUrl: finalUrl };
+                if (isEdit) {
+                    await update(ref(db, `games/${els.gameEditId.value}`), { ...data, updatedAt: serverTimestamp() });
+                    showStatus(els.gamesStatus, 'Game updated!', 'success');
+                } else {
+                    await push(ref(db, 'games'), { ...data, createdAt: serverTimestamp() });
+                    showStatus(els.gamesStatus, 'Game added!', 'success');
+                }
+                getModalInstance(els.gameModal)?.hide();
+                els.gameForm.reset();
+                els.gameEditId.value = '';
+                if (imgbbEl) { imgbbEl.textContent = '';
+                    imgbbEl.style.display = 'none'; }
+                loadGames();
+                loadDashboard();
+            } catch (e) {
+                console.error('Save game error:', e);
+                showStatus(statusEl, `Error: ${e.message}`, 'danger');
+            } finally {
+                showLoader(false);
+                els.saveGameBtn.disabled = false;
+            }
+        };
+
+        const deleteGame = async (id) => {
+            if (!confirm(`Delete game ${id}?`)) return;
+            showLoader(true);
+            try {
+                await remove(ref(db, `games/${id}`));
+                delete gameDataCache[id];
+                showStatus(els.gamesStatus, 'Game deleted.', 'success');
+                loadGames();
+                loadDashboard();
+            } catch (e) {
+                console.error('Delete game error:', e);
+                showStatus(els.gamesStatus, `Error: ${e.message}`, 'danger');
+            } finally { showLoader(false); }
+        };
+
+        const openEditGame = async (id) => {
+            try {
+                const snap = await get(ref(db, `games/${id}`));
+                if (!snap.exists()) throw new Error('Game not found.');
+                const g = snap.val();
+                els.gameModalTitle.textContent = 'Edit Game';
+                els.gameEditId.value = id;
+                els.gameName.value = g.name || '';
+                els.gameImageUrl.value = g.imageUrl || '';
+                els.gameImageFile.value = '';
+                clearStatus(els.gameStatus);
+                const imgbbEl = els.gameForm.querySelector('.imgbb-upload-status');
+                if (imgbbEl) { imgbbEl.textContent = '';
+                    imgbbEl.style.display = 'none'; }
+                getModalInstance(els.gameModal)?.show();
+            } catch (e) {
+                console.error('Open edit game error:', e);
+                showStatus(els.gamesStatus, `Error: ${e.message}`, 'danger');
+            }
+        };
+
+        // ============================================================
+        // PROMOTIONS CRUD
+        // ============================================================
+        const loadPromotions = async () => {
+            els.promotionsTableBody.innerHTML = tableLoadingHtml(3);
+            try {
+                const snap = await get(ref(db, 'promotions'));
+                let html = '';
+                if (snap.exists()) {
+                    snap.forEach(child => {
+                        const id = child.key;
+                        const p = child.val();
+                        if (p && p.imageUrl) {
+                            const link = p.link || '';
+                            const shortLink = link.length > 50 ? link.substring(0, 50) + '...' : link;
+                            html += `<tr>
+                                <td><img src="${sanitizeHTML(p.imageUrl)}" class="preview-img" alt="Promo" /></td>
+                                <td>${link ? `<a href="${sanitizeHTML(link)}" target="_blank" class="text-info" title="${sanitizeHTML(link)}">${sanitizeHTML(shortLink)}</a>` : '<span class="text-secondary">No Link</span>'}</td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-info btn-edit-promo" data-id="${sanitizeHTML(id)}" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                                    <button class="btn btn-sm btn-danger btn-delete-promo" data-id="${sanitizeHTML(id)}" title="Delete"><i class="bi bi-trash"></i></button>
+                                </td>
+                            </tr>`;
+                        }
+                    });
+                }
+                els.promotionsTableBody.innerHTML = html ||
+                    `<tr><td colspan="3" class="text-center text-secondary p-3">No promotions found.</td></tr>`;
+            } catch (e) {
+                console.error('Promotions load error:', e);
+                els.promotionsTableBody.innerHTML =
+                    `<tr><td colspan="3" class="text-center text-danger p-3">Error: ${e.message}</td></tr>`;
+                showStatus(els.promotionsStatus, `Error: ${e.message}`, 'danger');
+            }
+        };
+
+        const savePromotion = async () => {
+            const isEdit = !!els.promotionEditId.value;
+            const imgUrl = els.promoImageUrl.value.trim();
+            const link = els.promoLink.value.trim();
+            const file = els.promoImageFile.files[0];
+            const statusEl = els.promotionStatus;
+            const imgbbEl = els.promotionForm.querySelector('.imgbb-upload-status');
+            clearStatus(statusEl);
+            if (!imgUrl && !file && !isEdit) { showStatus(statusEl, 'Image URL or file required.', 'warning'); return; }
+            if (!imgUrl && !file && isEdit) { showStatus(statusEl, 'Image URL cannot be empty.', 'warning'); return; }
+            showLoader(true);
+            els.savePromotionBtn.disabled = true;
+            try {
+                let finalUrl = imgUrl;
+                if (file) finalUrl = await uploadToImgBB(file, imgbbEl);
+                if (!finalUrl) throw new Error('No image URL available.');
+                const data = { imageUrl: finalUrl, link: link || null };
+                if (isEdit) {
+                    await update(ref(db, `promotions/${els.promotionEditId.value}`), { ...data,
+                        updatedAt: serverTimestamp() });
+                    showStatus(els.promotionsStatus, 'Promotion updated!', 'success');
+                } else {
+                    await push(ref(db, 'promotions'), { ...data, createdAt: serverTimestamp() });
+                    showStatus(els.promotionsStatus, 'Promotion added!', 'success');
+                }
+                getModalInstance(els.promotionModal)?.hide();
+                els.promotionForm.reset();
+                els.promotionEditId.value = '';
+                if (imgbbEl) { imgbbEl.textContent = '';
+                    imgbbEl.style.display = 'none'; }
+                loadPromotions();
+                loadDashboard();
+            } catch (e) {
+                console.error('Save promotion error:', e);
+                showStatus(statusEl, `Error: ${e.message}`, 'danger');
+            } finally {
+                showLoader(false);
+                els.savePromotionBtn.disabled = false;
+            }
+        };
+
+        const deletePromotion = async (id) => {
+            if (!confirm(`Delete promotion ${id}?`)) return;
+            showLoader(true);
+            try {
+                await remove(ref(db, `promotions/${id}`));
+                showStatus(els.promotionsStatus, 'Promotion deleted.', 'success');
+                loadPromotions();
+                loadDashboard();
+            } catch (e) {
+                console.error('Delete promotion error:', e);
+                showStatus(els.promotionsStatus, `Error: ${e.message}`, 'danger');
+            } finally { showLoader(false); }
+        };
+
+        const openEditPromotion = async (id) => {
+            try {
+                const snap = await get(ref(db, `promotions/${id}`));
+                if (!snap.exists()) throw new Error('Promotion not found.');
+                const p = snap.val();
+                els.promotionModalTitle.textContent = 'Edit Promotion';
+                els.promotionEditId.value = id;
+                els.promoImageUrl.value = p.imageUrl || '';
+                els.promoLink.value = p.link || '';
+                els.promoImageFile.value = '';
+                clearStatus(els.promotionStatus);
+                const imgbbEl = els.promotionForm.querySelector('.imgbb-upload-status');
+                if (imgbbEl) { imgbbEl.textContent = '';
+                    imgbbEl.style.display = 'none'; }
+                getModalInstance(els.promotionModal)?.show();
+            } catch (e) {
+                console.error('Open edit promotion error:', e);
+                showStatus(els.promotionsStatus, `Error: ${e.message}`, 'danger');
+            }
+        };
+
+        // ============================================================
+        // TOURNAMENTS CRUD
+        // ============================================================
+        const populateGameSelect = async (selected = null) => {
+            const sel = els.tournamentGame;
+            sel.innerHTML = '<option value="">Loading...</option>';
+            sel.disabled = true;
+            try {
+                if (Object.keys(gameDataCache).length === 0) await loadGames();
+                sel.innerHTML = '<option value="">-- Select Game --</option>';
+                const sorted = Object.entries(gameDataCache).sort((a, b) => a[1].localeCompare(b[1]));
+                sorted.forEach(([id, name]) => {
+                    const opt = document.createElement('option');
+                    opt.value = id;
+                    opt.textContent = sanitizeHTML(name);
+                    sel.appendChild(opt);
+                });
+                if (selected) sel.value = selected;
+            } catch (e) {
+                sel.innerHTML = '<option value="">Error loading games</option>';
+            } finally { sel.disabled = false; }
+        };
+
+        const loadTournaments = async () => {
+            els.tournamentsTableBody.innerHTML = tableLoadingHtml(8);
+            try {
+                const snap = await get(ref(db, 'tournaments'));
+                let html = '';
+                if (snap.exists()) {
+                    snap.forEach(child => {
+                        const id = child.key;
+                        const t = child.val();
+                        if (t && t.name && t.gameId) {
+                            const gName = gameDataCache[t.gameId] || `<small class="text-warning">Unknown</small>`;
+                            let statusClass = 'secondary';
+                            if (t.status === 'ongoing') statusClass = 'success';
+                            else if (t.status === 'upcoming') statusClass = 'info';
+                            else if (t.status === 'result') statusClass = 'primary';
+                            else if (t.status === 'cancelled') statusClass = 'danger';
+                            const regCount = t.registeredPlayers ? Object.keys(t.registeredPlayers).length : 0;
+                            const maxP = t.maxPlayers || 0;
+                            const playersDisplay = maxP > 0 ? `${regCount}/${maxP}` : regCount;
+                            html += `<tr>
+                                <td>${sanitizeHTML(t.name)}</td>
+                                <td>${gName}</td>
+                                <td>${formatCurrency(t.entryFee)}</td>
+                                <td>${formatCurrency(t.prizePool)}</td>
+                                <td>${formatDate(t.startTime)}</td>
+                                <td><span class="status-badge text-bg-${statusClass}">${t.status}</span></td>
+                                <td>${playersDisplay}</td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-info btn-edit-tournament" data-id="${sanitizeHTML(id)}" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                                    <button class="btn btn-sm btn-secondary btn-view-registered" data-id="${sanitizeHTML(id)}" data-name="${sanitizeHTML(t.name)}" title="View Players"><i class="bi bi-people"></i></button>
+                                    <button class="btn btn-sm btn-danger btn-delete-tournament" data-id="${sanitizeHTML(id)}" title="Delete"><i class="bi bi-trash"></i></button>
+                                </td>
+                            </tr>`;
+                        }
+                    });
+                }
+                els.tournamentsTableBody.innerHTML = html ||
+                    `<tr><td colspan="8" class="text-center text-secondary p-3">No tournaments found.</td></tr>`;
+            } catch (e) {
+                console.error('Tournaments load error:', e);
+                els.tournamentsTableBody.innerHTML =
+                    `<tr><td colspan="8" class="text-center text-danger p-3">Error: ${e.message}</td></tr>`;
+                showStatus(els.tournamentsStatus, `Error: ${e.message}`, 'danger');
+            }
+        };
+
+        const saveTournament = async () => {
+            const isEdit = !!els.tournamentEditId.value;
+            const gameId = els.tournamentGame.value;
+            const name = els.tournamentName.value.trim();
+            const startStr = els.tournamentStartTime.value;
+            const statusEl = els.addTournamentStatus;
+            clearStatus(statusEl);
+            if (!gameId || !name || !startStr) { showStatus(statusEl, 'Game, Name, and Start Time required.', 'warning');
+                return; }
+            let startTime;
+            try { startTime = new Date(startStr).getTime(); } catch { showStatus(statusEl, 'Invalid start time.',
+                'warning'); return; }
+            const data = {
+                gameId,
+                name,
+                startTime,
+                status: els.tournamentStatus.value,
+                entryFee: parseFloat(els.tournamentEntryFee.value) || 0,
+                prizePool: parseFloat(els.tournamentPrizePool.value) || 0,
+                perKillPrize: parseFloat(els.tournamentPerKill.value) || 0,
+                maxPlayers: parseInt(els.tournamentMaxPlayers.value) || 0,
+                mode: els.tournamentMode.value,
+                tags: els.tournamentTags.value.split(',').map(s => s.trim()).filter(Boolean),
+                bannerUrl: els.tournamentBannerUrl.value.trim() || null,
+                description: els.tournamentDescription.value.trim(),
+                roomId: els.tournamentRoomId.value.trim() || null,
+                roomPassword: els.tournamentRoomPassword.value.trim() || null,
+                showIdPass: els.tournamentShowIdPass.checked,
+                updatedAt: serverTimestamp()
+            };
+            showLoader(true);
+            els.saveTournamentBtn.disabled = true;
+            try {
+                if (isEdit) {
+                    await update(ref(db, `tournaments/${els.tournamentEditId.value}`), data);
+                    showStatus(els.tournamentsStatus, 'Tournament updated!', 'success');
+                } else {
+                    data.createdAt = serverTimestamp();
+                    await push(ref(db, 'tournaments'), data);
+                    showStatus(els.tournamentsStatus, 'Tournament added!', 'success');
+                }
+                getModalInstance(els.addTournamentModal)?.hide();
+                els.tournamentForm.reset();
+                els.tournamentEditId.value = '';
+                currentEditingTournamentId = null;
+                loadTournaments();
+                loadDashboard();
+            } catch (e) {
+                console.error('Save tournament error:', e);
+                showStatus(statusEl, `Error: ${e.message}`, 'danger');
+            } finally {
+                showLoader(false);
+                els.saveTournamentBtn.disabled = false;
+            }
+        };
+
+        const deleteTournament = async (id) => {
+            if (!confirm(`Delete tournament ${id}?`)) return;
+            showLoader(true);
+            try {
+                await remove(ref(db, `tournaments/${id}`));
+                showStatus(els.tournamentsStatus, 'Tournament deleted.', 'success');
+                loadTournaments();
+                loadDashboard();
+            } catch (e) {
+                console.error('Delete tournament error:', e);
+                showStatus(els.tournamentsStatus, `Error: ${e.message}`, 'danger');
+            } finally { showLoader(false); }
+        };
+
+        const openEditTournament = async (id) => {
+            try {
+                const snap = await get(ref(db, `tournaments/${id}`));
+                if (!snap.exists()) throw new Error('Tournament not found.');
+                const t = snap.val();
+                els.tournamentModalTitle.textContent = 'Edit Tournament';
+                els.tournamentEditId.value = id;
+                await populateGameSelect(t.gameId);
+                els.tournamentName.value = t.name || '';
+                if (t.startTime) {
+                    try {
+                        const d = new Date(t.startTime);
+                        if (!isNaN(d)) {
+                            const offset = d.getTimezoneOffset() * 60000;
+                            els.tournamentStartTime.value = new Date(d - offset).toISOString().slice(0, 16);
+                        }
+                    } catch {}
+                }
+                els.tournamentStatus.value = t.status || 'upcoming';
+                els.tournamentMode.value = t.mode || 'Solo';
+                els.tournamentEntryFee.value = t.entryFee ?? 0;
+                els.tournamentPrizePool.value = t.prizePool ?? 0;
+                els.tournamentPerKill.value = t.perKillPrize ?? 0;
+                els.tournamentMaxPlayers.value = t.maxPlayers ?? 0;
+                els.tournamentTags.value = (t.tags || []).join(', ');
+                els.tournamentBannerUrl.value = t.bannerUrl || '';
+                els.tournamentDescription.value = t.description || '';
+                els.tournamentRoomId.value = t.roomId || '';
+                els.tournamentRoomPassword.value = t.roomPassword || '';
+                els.tournamentShowIdPass.checked = t.showIdPass || false;
+                clearStatus(els.addTournamentStatus);
+                getModalInstance(els.addTournamentModal)?.show();
+            } catch (e) {
+                console.error('Open edit tournament error:', e);
+                showStatus(els.tournamentsStatus, `Error: ${e.message}`, 'danger');
+            }
+        };
+
+        // ============================================================
+        // REGISTERED PLAYERS
+        // ============================================================
+        const openRegisteredPlayers = async (id, name) => {
+            els.registeredPlayersModalTitle.textContent = 'Registered Players';
+            els.registeredPlayersTournamentName.textContent = name || 'N/A';
+            els.registeredPlayersTableBody.innerHTML =
+                '<tr><td colspan="5" class="text-center"><div class="spinner-border spinner-border-sm"></div></td></tr>';
+            clearStatus(els.registeredPlayersStatus);
+            getModalInstance(els.registeredPlayersModal)?.show();
+            try {
+                const snap = await get(ref(db, `tournaments/${id}/registeredPlayers`));
+                if (!snap.exists()) {
+                    els.registeredPlayersTableBody.innerHTML =
+                        '<tr><td colspan="5" class="text-center text-secondary p-3">No players registered.</td></tr>';
+                    return;
+                }
+                const data = snap.val();
+                const uids = Object.keys(data);
+                let html = '';
+                for (const uid of uids) {
+                    const reg = data[uid];
+                    let user = fullUserDataCache[uid];
+                    if (!user) {
+                        const uSnap = await get(ref(db, `users/${uid}`));
+                        if (uSnap.exists()) { user = uSnap.val();
+                            fullUserDataCache[uid] = user; }
+                    }
+                    const displayName = user?.displayName || 'Unknown';
+                    const email = user?.email || 'N/A';
+                    const p1 = reg.username || 'N/A';
+                    const p1uid = reg.gameUid || 'N/A';
+                    const p2 = reg.teammateUsername || 'N/A';
+                    const p2uid = reg.teammateGameUid || 'N/A';
+                    html += `<tr>
+                        <td>${sanitizeHTML(displayName)}<br/><small class="text-muted">${sanitizeHTML(email)}</small></td>
+                        <td>${sanitizeHTML(p1)}<br/><small class="text-muted">${sanitizeHTML(p1uid)}</small></td>
+                        <td>${reg.teammateUsername ? sanitizeHTML(p2) : 'N/A'}<br/>${reg.teammateUsername ? `<small class="text-muted">${sanitizeHTML(p2uid)}</small>` : ''}</td>
+                        <td>${formatDate(reg.joinedAt)}</td>
+                        <td><button class="btn btn-sm btn-danger btn-remove-player" data-tournament="${sanitizeHTML(id)}" data-uid="${sanitizeHTML(uid)}" title="Remove Player"><i class="bi bi-person-x"></i></button></td>
+                    </tr>`;
+                }
+                els.registeredPlayersTableBody.innerHTML = html;
+            } catch (e) {
+                console.error('Registered players error:', e);
+                els.registeredPlayersTableBody.innerHTML =
+                    `<tr><td colspan="5" class="text-center text-danger p-3">Error: ${e.message}</td></tr>`;
+                showStatus(els.registeredPlayersStatus, `Error: ${e.message}`, 'danger');
+            }
+        };
+
+        const removePlayer = async (tournamentId, uid) => {
+            if (!confirm(`Remove player ${uid} from tournament?`)) return;
+            showLoader(true);
+            try {
+                await remove(ref(db, `tournaments/${tournamentId}/registeredPlayers/${uid}`));
+                showStatus(els.registeredPlayersStatus, 'Player removed.', 'success');
+                openRegisteredPlayers(tournamentId, els.registeredPlayersTournamentName.textContent);
+                loadTournaments();
+                loadDashboard();
+            } catch (e) {
+                console.error('Remove player error:', e);
+                showStatus(els.registeredPlayersStatus, `Error: ${e.message}`, 'danger');
+            } finally { showLoader(false); }
+        };
+
+        // ============================================================
+        // USERS
+        // ============================================================
+        const loadUsers = async () => {
+            els.usersTableBody.innerHTML = tableLoadingHtml(5);
+            try {
+                const snap = await get(ref(db, 'users'));
+                fullUserDataCache = {};
+                if (snap.exists()) {
+                    snap.forEach(child => {
+                        const u = child.val();
+                        if (u && u.email) {
+                            u.uid = child.key;
+                            fullUserDataCache[child.key] = u;
+                            userDataCache[child.key] = { displayName: u.displayName || 'N/A', email: u.email,
+                                status: u.status || 'active' };
+                        }
+                    });
+                }
+                renderUsersTable(Object.values(fullUserDataCache));
+            } catch (e) {
+                console.error('Users load error:', e);
+                els.usersTableBody.innerHTML =
+                    `<tr><td colspan="5" class="text-center text-danger p-3">Error: ${e.message}</td></tr>`;
+                showStatus(els.usersStatus, `Error: ${e.message}`, 'danger');
+            }
+        };
+
+        const renderUsersTable = (users) => {
+            let html = '';
+            if (users && users.length > 0) {
+                users.sort((a, b) => (a.displayName || '').localeCompare(b.displayName || ''));
+                users.forEach(u => {
+                    const status = u.status || 'active';
+                    const badge = status === 'active' ? 'success' : 'danger';
+                    html += `<tr>
+                        <td><small class="text-muted">${sanitizeHTML(u.uid)}</small> <i class="bi bi-clipboard copy-btn ms-1" data-target="td:first-child > small" title="Copy UID"></i></td>
+                        <td>${sanitizeHTML(u.displayName || 'N/A')}</td>
+                        <td>${sanitizeHTML(u.email)}</td>
+                        <td><span class="status-badge text-bg-${badge}">${status}</span></td>
+                        <td class="action-buttons">
+                            <button class="btn btn-sm btn-info btn-view-user" data-id="${sanitizeHTML(u.uid)}" title="View/Edit"><i class="bi bi-eye"></i></button>
+                        </td>
+                    </tr>`;
+                });
+            }
+            els.usersTableBody.innerHTML = html ||
+                `<tr><td colspan="5" class="text-center text-secondary p-3">No users found.</td></tr>`;
+        };
+
+        const filterUsers = () => {
+            const term = els.userSearchInput.value.toLowerCase().trim();
+            const users = Object.values(fullUserDataCache).filter(u =>
+                (u.displayName || '').toLowerCase().includes(term) ||
+                (u.email || '').toLowerCase().includes(term)
+            );
+            renderUsersTable(users);
+        };
+
+        const openUserModal = async (uid) => {
+            try {
+                let u = fullUserDataCache[uid];
+                if (!u) {
+                    const snap = await get(ref(db, `users/${uid}`));
+                    if (!snap.exists()) throw new Error('User not found.');
+                    u = snap.val();
+                    u.uid = uid;
+                    fullUserDataCache[uid] = u;
+                }
+                els.userModalTitle.textContent = `User: ${sanitizeHTML(u.displayName || 'N/A')}`;
+                els.userDetailUid.textContent = uid;
+                els.userDetailEmail.textContent = sanitizeHTML(u.email || 'N/A');
+                els.userDetailName.textContent = sanitizeHTML(u.displayName || 'N/A');
+                els.userDetailCreatedAt.textContent = formatDate(u.createdAt);
+                const status = u.status || 'active';
+                els.userDetailStatus.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+                els.userDetailStatus.className = `fw-bold text-${status === 'active' ? 'success' : 'danger'}`;
+                els.userBlockBtn.textContent = status === 'active' ? 'Block User' : 'Unblock User';
+                els.userBlockBtn.className = `btn btn-sm ${status === 'active' ? 'btn-danger' : 'btn-success'}`;
+                els.userBlockBtn.dataset.id = uid;
+                els.userBlockBtn.dataset.action = status === 'active' ? 'block' : 'unblock';
+                els.editNameUserUid.value = uid;
+                els.editDisplayNameInput.value = u.displayName || '';
+                clearStatus(els.editNameStatus);
+                clearStatus(els.individualNotificationStatus);
+                els.individualNotificationForm.reset();
+                getModalInstance(els.userModal)?.show();
+            } catch (e) {
+                console.error('Open user modal error:', e);
+                showStatus(els.usersStatus, `Error: ${e.message}`, 'danger');
+            }
+        };
+
+        const toggleUserBlock = async (e) => {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+            const uid = btn.dataset.id;
+            const action = btn.dataset.action;
+            const newStatus = action === 'block' ? 'blocked' : 'active';
+            if (!confirm(`${action} user ${uid}?`)) return;
+            showLoader(true);
+            try {
+                await set(ref(db, `users/${uid}/status`), newStatus);
+                if (fullUserDataCache[uid]) fullUserDataCache[uid].status = newStatus;
+                showStatus(els.usersStatus, `User ${newStatus} successfully.`, 'success');
+                loadUsers();
+                if (getModalInstance(els.userModal)?._isShown) openUserModal(uid);
+            } catch (e) {
+                console.error('Toggle block error:', e);
+                showStatus(els.usersStatus, `Error: ${e.message}`, 'danger');
+            } finally { showLoader(false); }
+        };
+
+        const updateDisplayName = async (e) => {
+            e.preventDefault();
+            const uid = els.editNameUserUid.value;
+            const newName = els.editDisplayNameInput.value.trim();
+            if (!newName) { showStatus(els.editNameStatus, 'Name cannot be empty.', 'warning'); return; }
+            showLoader(true);
+            try {
+                await update(ref(db, `users/${uid}`), { displayName: newName });
+                if (fullUserDataCache[uid]) fullUserDataCache[uid].displayName = newName;
+                showStatus(els.editNameStatus, 'Name updated!', 'success');
+                loadUsers();
+                openUserModal(uid);
+            } catch (e) {
+                console.error('Update name error:', e);
+                showStatus(els.editNameStatus, `Error: ${e.message}`, 'danger');
+            } finally { showLoader(false); }
+        };
+
+        // ============================================================
+        // NOTIFICATIONS
+        // ============================================================
+        const sendGlobalNotification = async (e) => {
+            e.preventDefault();
+            const title = els.globalNotifTitle.value.trim();
+            const msg = els.globalNotifMessage.value.trim();
+            const img = els.globalNotifImageUrl.value.trim();
+            if (!title || !msg) { showStatus(els.globalNotificationStatus, 'Title and message required.', 'warning');
+                return; }
+            showLoader(true);
+            try {
+                await push(ref(db, 'notifications'), {
+                    title,
+                    message: msg,
+                    imageUrl: img || null,
+                    timestamp: serverTimestamp()
+                });
+                showStatus(els.globalNotificationStatus, 'Global notification sent!', 'success');
+                els.globalNotificationForm.reset();
+                loadNotificationHistory();
+            } catch (e) {
+                console.error('Send global notification error:', e);
+                showStatus(els.globalNotificationStatus, `Error: ${e.message}`, 'danger');
+            } finally { showLoader(false); }
+        };
+
+        const loadNotificationHistory = async () => {
+            els.globalNotificationsHistory.innerHTML =
+            '<p class="text-secondary">Loading history...</p>';
+            try {
+                const snap = await get(ref(db, 'notifications'));
+                if (!snap.exists()) {
+                    els.globalNotificationsHistory.innerHTML =
+                    '<p class="text-secondary text-center p-3">No notifications sent yet.</p>';
+                    return;
+                }
+                const notifs = [];
+                snap.forEach(child => notifs.push({ id: child.key, ...child.val() }));
+                notifs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                let html =
+                    '<div class="table-responsive"><table class="table table-dark table-sm table-hover"><thead><tr><th>Sent At</th><th>Title</th><th>Message</th><th>Image</th></tr></thead><tbody>';
+                notifs.forEach(n => {
+                    html += `<tr>
+                        <td>${formatDate(n.timestamp)}</td>
+                        <td>${sanitizeHTML(n.title)}</td>
+                        <td style="white-space:pre-wrap;word-break:break-word;min-width:200px;">${sanitizeHTML(n.message)}</td>
+                        <td>${n.imageUrl ? `<a href="${sanitizeHTML(n.imageUrl)}" target="_blank">View</a>` : '<span class="text-secondary">None</span>'}</td>
+                    </tr>`;
+                });
+                html += '</tbody></table></div>';
+                els.globalNotificationsHistory.innerHTML = html;
+            } catch (e) {
+                console.error('Notification history error:', e);
+                els.globalNotificationsHistory.innerHTML =
+                    `<p class="text-danger">Error: ${e.message}</p>`;
+            }
+        };
+
+        const populateTournamentNotifSelect = async () => {
+            const sel = els.tournamentNotifSelect;
+            sel.innerHTML = '<option value="">Loading...</option>';
+            try {
+                const snap = await get(ref(db, 'tournaments'));
+                sel.innerHTML = '<option value="">-- Select Tournament --</option>';
+                if (snap.exists()) {
+                    snap.forEach(child => {
+                        const t = child.val();
+                        if (t && t.name) {
+                            const opt = document.createElement('option');
+                            opt.value = child.key;
+                            opt.textContent = `${t.name} (${t.status || 'N/A'})`;
+                            sel.appendChild(opt);
+                        }
+                    });
+                }
+            } catch (e) {
+                sel.innerHTML = '<option value="">Error loading</option>';
+                console.error('Populate tournament notif error:', e);
+            }
+        };
+
+        const sendTournamentNotification = async (e) => {
+            e.preventDefault();
+            const tId = els.tournamentNotifSelect.value;
+            const title = els.tournamentNotifTitle.value.trim();
+            const msg = els.tournamentNotifMessage.value.trim();
+            if (!tId || !title || !msg) { showStatus(els.tournamentNotificationStatus, 'All fields required.',
+                'warning'); return; }
+            showLoader(true);
+            try {
+                // Get all registered players for this tournament
+                const regSnap = await get(ref(db, `tournaments/${tId}/registeredPlayers`));
+                if (!regSnap.exists()) {
+                    showStatus(els.tournamentNotificationStatus, 'No players registered for this tournament.', 'info');
+                    return;
+                }
+                const players = regSnap.val();
+                const uids = Object.keys(players);
+                const notifData = { title, message: msg, imageUrl: null, timestamp: serverTimestamp() };
+                const updates = {};
+                uids.forEach(uid => {
+                    const refPath = `users/${uid}/notifications`;
+                    const newKey = push(ref(db, refPath)).key;
+                    updates[`${refPath}/${newKey}`] = notifData;
+                });
+                await update(ref(db), updates);
+                showStatus(els.tournamentNotificationStatus,
+                    `Notification sent to ${uids.length} players!`, 'success');
+                els.tournamentNotificationForm.reset();
+            } catch (e) {
+                console.error('Tournament notification error:', e);
+                showStatus(els.tournamentNotificationStatus, `Error: ${e.message}`, 'danger');
+            } finally { showLoader(false); }
+        };
+
+        const sendIndividualNotification = async (e) => {
+            e.preventDefault();
+            const uid = els.editNameUserUid.value;
+            if (!uid) { showStatus(els.individualNotificationStatus, 'No user selected.', 'warning'); return; }
+            const title = els.individualNotifTitle.value.trim();
+            const msg = els.individualNotifMessage.value.trim();
+            const img = els.individualNotifImageUrl.value.trim();
+            if (!title || !msg) { showStatus(els.individualNotificationStatus, 'Title and message required.',
+                'warning'); return; }
+            showLoader(true);
+            try {
+                await push(ref(db, `users/${uid}/notifications`), {
+                    title,
+                    message: msg,
+                    imageUrl: img || null,
+                    timestamp: serverTimestamp()
+                });
+                showStatus(els.individualNotificationStatus, 'Notification sent!', 'success');
+                els.individualNotificationForm.reset();
+            } catch (e) {
+                console.error('Individual notification error:', e);
+                showStatus(els.individualNotificationStatus, `Error: ${e.message}`, 'danger');
+            } finally { showLoader(false); }
+        };
+
+        // ============================================================
+        // TOURNAMENT CHAT
+        // ============================================================
+        const populateChatTournamentSelect = async () => {
+            const sel = els.chatTournamentSelect;
+            sel.innerHTML = '<option value="">Loading...</option>';
+            try {
+                const snap = await get(ref(db, 'tournaments'));
+                sel.innerHTML = '<option value="">-- Select Tournament --</option>';
+                if (snap.exists()) {
+                    snap.forEach(child => {
+                        const t = child.val();
+                        if (t && t.name) {
+                            const opt = document.createElement('option');
+                            opt.value = child.key;
+                            opt.textContent = `${t.name} (${t.status || 'N/A'})`;
+                            sel.appendChild(opt);
+                        }
+                    });
+                }
+            } catch (e) {
+                sel.innerHTML = '<option value="">Error loading</option>';
+                console.error('Populate chat select error:', e);
+            }
+        };
+
+        let activeChatListener = null;
+
+        const loadChatMessages = () => {
+            const tId = els.chatTournamentSelect.value;
+            if (!tId) { showStatus(els.chatStatus, 'Please select a tournament.', 'warning'); return; }
+            if (activeChatListener) {
+                off(activeChatListener);
+                activeChatListener = null;
+            }
+            currentChatTournamentId = tId;
+            els.chatMessagesEl.innerHTML =
+                '<div class="text-center p-4"><div class="spinner-border spinner-border-sm text-accent"></div><p class="text-secondary mt-2">Loading messages...</p></div>';
+            clearStatus(els.chatStatus);
+
+            const chatRef = ref(db, `chats/${tId}`);
+            const q = query(chatRef, orderByChild('timestamp'), limitToLast(100));
+
+            activeChatListener = onValue(q, (snapshot) => {
+                if (!snapshot.exists()) {
+                    els.chatMessagesEl.innerHTML =
+                        '<p class="text-secondary text-center p-4">No messages yet.</p>';
+                    return;
+                }
+                const msgs = [];
+                snapshot.forEach(child => msgs.push({ id: child.key, ...child.val() }));
+                msgs.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                let html = '';
+                msgs.forEach(m => {
+                    const isMe = m.uid === currentStaffUser?.uid;
+                    html += `<div class="chat-bubble ${isMe ? 'my-message' : 'other-message'}" style="max-width:80%; ${isMe ? 'align-self:flex-end;' : 'align-self:flex-start;'}">
+                        ${!isMe ? `<span class="sender-name">${sanitizeHTML(m.displayName || 'User')}</span>` : ''}
+                        ${m.message || ''}
+                        <span class="msg-time">${formatDate(m.timestamp)}</span>
+                    </div>`;
+                });
+                els.chatMessagesEl.innerHTML = html;
+                // Scroll to bottom (newest)
+                const container = els.chatMessagesEl;
+                container.scrollTop = container.scrollHeight;
+            }, (error) => {
+                console.error('Chat listener error:', error);
+                els.chatMessagesEl.innerHTML =
+                    `<p class="text-danger text-center p-4">Error loading chat: ${error.message}</p>`;
+            });
+        };
+
+        const refreshChat = () => {
+            if (currentChatTournamentId) loadChatMessages();
+            else showStatus(els.chatStatus, 'No tournament selected.', 'warning');
+        };
+
+        const openChatModal = (tournamentId, tournamentName) => {
+            els.tournamentChatModalTitle.textContent = `Chat - ${tournamentName || 'Tournament'}`;
+            els.chatMessagesModalEl.innerHTML =
+                '<div class="text-center p-4"><div class="spinner-border spinner-border-sm text-accent"></div></div>';
+            getModalInstance(els.tournamentChatModal)?.show();
+
+            const chatRef = ref(db, `chats/${tournamentId}`);
+            const q = query(chatRef, orderByChild('timestamp'), limitToLast(100));
+
+            if (chatListener) { off(chatListener);
+                chatListener = null; }
+            chatListener = onValue(q, (snapshot) => {
+                if (!snapshot.exists()) {
+                    els.chatMessagesModalEl.innerHTML =
+                        '<p class="text-secondary text-center p-4">No messages yet.</p>';
+                    return;
+                }
+                const msgs = [];
+                snapshot.forEach(child => msgs.push({ id: child.key, ...child.val() }));
+                msgs.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                let html = '';
+                msgs.forEach(m => {
+                    const isMe = m.uid === currentStaffUser?.uid;
+                    html += `<div class="chat-bubble ${isMe ? 'my-message' : 'other-message'}" style="max-width:80%; ${isMe ? 'align-self:flex-end;' : 'align-self:flex-start;'}">
+                        ${!isMe ? `<span class="sender-name">${sanitizeHTML(m.displayName || 'User')}</span>` : ''}
+                        ${m.message || ''}
+                        <span class="msg-time">${formatDate(m.timestamp)}</span>
+                    </div>`;
+                });
+                els.chatMessagesModalEl.innerHTML = html;
+                const container = els.chatMessagesModalEl;
+                container.scrollTop = container.scrollHeight;
+            });
+        };
+
+        const sendChatMessage = async (e) => {
+            e.preventDefault();
+            const tId = currentChatTournamentId;
+            if (!tId) { showStatus(els.chatStatus, 'No tournament selected.', 'warning'); return; }
+            const msg = els.chatMessageInput.value.trim();
+            if (!msg) return;
+            try {
+                await push(ref(db, `chats/${tId}`), {
+                    uid: currentStaffUser.uid,
+                    displayName: currentStaffUser.email?.split('@')[0] || 'Staff',
+                    message: msg,
+                    timestamp: serverTimestamp()
+                });
+                els.chatMessageInput.value = '';
+            } catch (e) {
+                console.error('Send chat error:', e);
+                showStatus(els.chatStatus, `Error: ${e.message}`, 'danger');
+            }
+        };
+
+        // ============================================================
+        // REALTIME LISTENERS
+        // ============================================================
+        const setupRealtimeListeners = () => {
+            detachAllListeners();
+
+            // Users listener for dashboard stats
+            const uKey = 'usersListener';
+            const uRef = ref(db, 'users');
+            dbListeners[uKey] = onValue(uRef, (snap) => {
+                if (snap.exists()) {
+                    const count = snap.size;
+                    if (els.statTotalUsers) els.statTotalUsers.textContent = count;
+                    // Update user cache
+                    fullUserDataCache = {};
+                    snap.forEach(child => {
+                        const u = child.val();
+                        if (u && u.email) { u.uid = child.key;
+                            fullUserDataCache[child.key] = u; }
+                    });
+                    if (document.getElementById('users-section').classList.contains('active')) {
+                        renderUsersTable(Object.values(fullUserDataCache));
+                    }
+                }
+            });
+
+            // Tournaments listener for dashboard
+            const tKey = 'tournamentsListener';
+            const tRef = ref(db, 'tournaments');
+            dbListeners[tKey] = onValue(tRef, (snap) => {
+                if (snap.exists()) {
+                    let active = 0,
+                        live = 0,
+                        completed = 0,
+                        joined = 0;
+                    snap.forEach(child => {
+                        const t = child.val();
+                        if (t.status === 'upcoming') active++;
+                        else if (t.status === 'ongoing') { active++;
+                            live++; } else if (t.status === 'completed' || t.status === 'result') completed++;
+                        if (t.registeredPlayers) joined += Object.keys(t.registeredPlayers).length;
+                    });
+                    if (els.statActiveTournaments) els.statActiveTournaments.textContent = active;
+                    if (els.statLiveTournaments) els.statLiveTournaments.textContent = live;
+                    if (els.statCompletedTournaments) els.statCompletedTournaments.textContent = completed;
+                    if (els.statJoinedPlayers) els.statJoinedPlayers.textContent = joined;
+                    // Update tournaments table if visible
+                    if (document.getElementById('tournaments-section').classList.contains('active')) {
+                        loadTournaments();
+                    }
+                }
+            });
+        };
+
+        const detachAllListeners = () => {
+            Object.keys(dbListeners).forEach(key => {
+                try {
+                    const refPath = key === 'usersListener' ? ref(db, 'users') :
+                        key === 'tournamentsListener' ? ref(db, 'tournaments') :
+                        key === 'chatListener' ? ref(db, `chats/${currentChatTournamentId}`) : null;
+                    if (refPath) off(refPath, 'value', dbListeners[key]);
+                } catch (e) { console.warn('Detach error:', e); }
+            });
+            dbListeners = {};
+            if (chatListener) { off(chatListener);
+                chatListener = null; }
+            if (activeChatListener) { off(activeChatListener);
+                activeChatListener = null; }
+        };
+
+        // ============================================================
+        // LOAD STAFF DATA (initial load for all sections)
+        // ============================================================
+        const loadStaffData = async () => {
+            await Promise.all([
+                loadDashboard(),
+                loadGames(),
+                loadPromotions(),
+                loadTournaments(),
+                loadUsers(),
+                loadNotificationHistory(),
+                populateTournamentNotifSelect(),
+                populateChatTournamentSelect()
+            ]);
+        };
+
+        // ============================================================
+        // EVENT BINDING
+        // ============================================================
+        const init = () => {
+            // Auth
+            els.loginForm.addEventListener('submit', handleLogin);
+            els.logoutBtn.addEventListener('click', handleLogout);
+
+            // Sidebar nav
+            els.sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const id = link.dataset.section;
+                    if (id) showSection(id);
+                });
+            });
+
+            // Games
+            els.saveGameBtn.addEventListener('click', saveGame);
+            els.addNewGameBtn.addEventListener('click', () => {
+                els.gameModalTitle.textContent = 'Add New Game';
+                els.gameEditId.value = '';
+                els.gameForm.reset();
+                clearStatus(els.gameStatus);
+                const imgbbEl = els.gameForm.querySelector('.imgbb-upload-status');
+                if (imgbbEl) { imgbbEl.textContent = '';
+                    imgbbEl.style.display = 'none'; }
+                getModalInstance(els.gameModal)?.show();
+            });
+
+            // Promotions
+            els.savePromotionBtn.addEventListener('click', savePromotion);
+            els.addNewPromotionBtn.addEventListener('click', () => {
+                els.promotionModalTitle.textContent = 'Add New Promotion';
+                els.promotionEditId.value = '';
+                els.promotionForm.reset();
+                clearStatus(els.promotionStatus);
+                const imgbbEl = els.promotionForm.querySelector('.imgbb-upload-status');
+                if (imgbbEl) { imgbbEl.textContent = '';
+                    imgbbEl.style.display = 'none'; }
+                getModalInstance(els.promotionModal)?.show();
+            });
+
+            // Tournaments
+            els.saveTournamentBtn.addEventListener('click', saveTournament);
+            els.addNewTournamentBtn.addEventListener('click', () => {
+                currentEditingTournamentId = null;
+                els.tournamentModalTitle.textContent = 'Add New Tournament';
+                els.tournamentForm.reset();
+                els.tournamentEditId.value = '';
+                clearStatus(els.addTournamentStatus);
+                populateGameSelect();
+                getModalInstance(els.addTournamentModal)?.show();
+            });
+
+            // Users
+            els.userSearchInput.addEventListener('input', filterUsers);
+            els.userBlockBtn.addEventListener('click', toggleUserBlock);
+            els.editDisplayNameForm.addEventListener('submit', updateDisplayName);
+
+            // Notifications
+            els.globalNotificationForm.addEventListener('submit', sendGlobalNotification);
+            els.tournamentNotificationForm.addEventListener('submit', sendTournamentNotification);
+            els.individualNotificationForm.addEventListener('submit', sendIndividualNotification);
+
+            // Chat
+            els.loadChatMessagesBtn.addEventListener('click', loadChatMessages);
+            els.refreshChatBtn.addEventListener('click', refreshChat);
+            els.chatForm.addEventListener('submit', sendChatMessage);
+
+            // Registered players - delegate
+            els.registeredPlayersTableBody.addEventListener('click', (e) => {
+                const btn = e.target.closest('.btn-remove-player');
+                if (btn) {
+                    const tId = btn.dataset.tournament;
+                    const uid = btn.dataset.uid;
+                    if (tId && uid) removePlayer(tId, uid);
+                }
+            });
+
+            // Global click delegation for CRUD actions
+            document.body.addEventListener('click', (e) => {
+                const target = e.target.closest('button[data-id]');
+                if (!target) return;
+                const id = target.dataset.id;
+                if (!id) return;
+
+                if (target.classList.contains('btn-delete-game')) deleteGame(id);
+                else if (target.classList.contains('btn-edit-game')) openEditGame(id);
+                else if (target.classList.contains('btn-delete-promo')) deletePromotion(id);
+                else if (target.classList.contains('btn-edit-promo')) openEditPromotion(id);
+                else if (target.classList.contains('btn-delete-tournament')) deleteTournament(id);
+                else if (target.classList.contains('btn-edit-tournament')) openEditTournament(id);
+                else if (target.classList.contains('btn-view-user')) openUserModal(id);
+                else if (target.classList.contains('btn-view-registered')) {
+                    const name = target.dataset.name || 'Tournament';
+                    openRegisteredPlayers(id, name);
+                }
+            });
+
+            // Copy functionality
+            document.body.addEventListener('click', (e) => {
+                const copy = e.target.closest('.copy-btn[data-target]');
+                if (copy) {
+                    const sel = copy.dataset.target;
+                    if (sel) copyToClipboard(sel);
+                }
+            });
+
+            // Modal cleanup
+            const resetModal = (modalEl, formEl, statusEl, idField) => {
+                modalEl?.addEventListener('hidden.bs.modal', () => {
+                    if (formEl) formEl.reset();
+                    if (statusEl) clearStatus(statusEl);
+                    if (idField) idField.value = '';
+                    const imgbb = formEl?.querySelector('.imgbb-upload-status');
+                    if (imgbb) { imgbb.textContent = '';
+                        imgbb.style.display = 'none'; }
+                    if (modalEl === els.addTournamentModal) currentEditingTournamentId = null;
+                });
+            };
+            resetModal(els.gameModal, els.gameForm, els.gameStatus, els.gameEditId);
+            resetModal(els.promotionModal, els.promotionForm, els.promotionStatus, els.promotionEditId);
+            resetModal(els.addTournamentModal, els.tournamentForm, els.addTournamentStatus, els.tournamentEditId);
+
+            // Auth state
+            onAuthStateChanged(auth, handleAuthState);
+        };
+
+        // ============================================================
+        // START
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+
+</body>
+</html>
